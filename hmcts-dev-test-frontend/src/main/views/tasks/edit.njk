@@ -1,0 +1,105 @@
+{% extends "../template.njk" %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <main class="govuk-main-wrapper" id="main-content" role="main">
+      <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+          <li class="govuk-breadcrumbs__list-item">
+            <a class="govuk-breadcrumbs__link" href="/tasks">Tasks</a>
+          </li>
+          <li class="govuk-breadcrumbs__list-item">
+            <a class="govuk-breadcrumbs__link" href="/tasks/{{ task.id }}">{{ task.title }}</a>
+          </li>
+          <li class="govuk-breadcrumbs__list-item">
+            Edit
+          </li>
+        </ol>
+      </div>
+
+      <h1 class="govuk-heading-xl">{{ title }}</h1>
+      
+      {% if error %}
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+          <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+          <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+              <li>{{ error }}</li>
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+
+      <form method="post" action="/tasks/{{ task.id }}" novalidate>
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-label--l" for="title">
+            Title
+          </label>
+          <input class="govuk-input" id="title" name="title" type="text" value="{{ task.title or '' }}" required>
+        </div>
+
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-label--l" for="description">
+            Description
+          </label>
+          <div class="govuk-hint">
+            Optional. Provide additional details about the task.
+          </div>
+          <textarea class="govuk-textarea" id="description" name="description" rows="5">{{ task.description or '' }}</textarea>
+        </div>
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              Status
+            </legend>
+            <div class="govuk-radios" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="status-todo" name="status" type="radio" value="TODO" {% if task.status === "TODO" %}checked{% endif %}>
+                <label class="govuk-label govuk-radios__label" for="status-todo">
+                  To Do
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="status-inprogress" name="status" type="radio" value="IN_PROGRESS" {% if task.status === "IN_PROGRESS" %}checked{% endif %}>
+                <label class="govuk-label govuk-radios__label" for="status-inprogress">
+                  In Progress
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="status-completed" name="status" type="radio" value="COMPLETED" {% if task.status === "COMPLETED" %}checked{% endif %}>
+                <label class="govuk-label govuk-radios__label" for="status-completed">
+                  Completed
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="status-cancelled" name="status" type="radio" value="CANCELLED" {% if task.status === "CANCELLED" %}checked{% endif %}>
+                <label class="govuk-label govuk-radios__label" for="status-cancelled">
+                  Cancelled
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-label--l" for="dueDate">
+            Due Date
+          </label>
+          <div class="govuk-hint">
+            Enter the date and time when this task is due. Format: YYYY-MM-DDTHH:MM
+          </div>
+          {% set formattedDate = task.dueDate | date("YYYY-MM-DDTHH:mm") if task.dueDate else '' %}
+          <input class="govuk-input" id="dueDate" name="dueDate" type="datetime-local" value="{{ formattedDate }}">
+        </div>
+
+        <div class="govuk-button-group">
+          <button class="govuk-button" data-module="govuk-button" type="submit">
+            Update Task
+          </button>
+          <a class="govuk-link" href="/tasks/{{ task.id }}">Cancel</a>
+        </div>
+      </form>
+    </main>
+  </div>
+{% endblock %}

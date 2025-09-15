@@ -1,0 +1,110 @@
+{% extends "../template.njk" %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <main class="govuk-main-wrapper" id="main-content" role="main">
+      <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+          <li class="govuk-breadcrumbs__list-item">
+            <a class="govuk-breadcrumbs__link" href="/tasks">Tasks</a>
+          </li>
+          <li class="govuk-breadcrumbs__list-item">
+            {{ task.title }}
+          </li>
+        </ol>
+      </div>
+
+      <h1 class="govuk-heading-xl">{{ task.title }}</h1>
+
+      <div class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Status
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {% set statusClass = "govuk-tag--blue" %}
+            {% if task.status === "COMPLETED" %}
+              {% set statusClass = "govuk-tag--green" %}
+            {% elif task.status === "IN_PROGRESS" %}
+              {% set statusClass = "govuk-tag--yellow" %}
+            {% elif task.status === "CANCELLED" %}
+              {% set statusClass = "govuk-tag--red" %}
+            {% endif %}
+            <strong class="govuk-tag {{ statusClass }}">{{ task.status.replace('_', ' ') }}</strong>
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <form method="post" action="/tasks/{{ task.id }}/status" style="display: inline;">
+              <select name="status" onchange="this.form.submit()" class="govuk-select">
+                <option value="">Change status...</option>
+                <option value="TODO" {% if task.status === "TODO" %}disabled{% endif %}>To Do</option>
+                <option value="IN_PROGRESS" {% if task.status === "IN_PROGRESS" %}disabled{% endif %}>In Progress</option>
+                <option value="COMPLETED" {% if task.status === "COMPLETED" %}disabled{% endif %}>Completed</option>
+                <option value="CANCELLED" {% if task.status === "CANCELLED" %}disabled{% endif %}>Cancelled</option>
+              </select>
+            </form>
+          </dd>
+        </div>
+
+        {% if task.description %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Description
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ task.description | nl2br | safe }}
+          </dd>
+        </div>
+        {% endif %}
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Due Date
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {% if task.dueDate %}
+              {{ task.dueDate | date("DD/MM/YYYY HH:mm") }}
+            {% else %}
+              Not set
+            {% endif %}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Created
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {% if task.createdAt %}
+              {{ task.createdAt | date("DD/MM/YYYY HH:mm") }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Last Updated
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {% if task.updatedAt %}
+              {{ task.updatedAt | date("DD/MM/YYYY HH:mm") }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+      </div>
+
+      <div class="govuk-button-group">
+        <a class="govuk-button" href="/tasks/{{ task.id }}/edit">Edit Task</a>
+        <form method="post" action="/tasks/{{ task.id }}/delete" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this task?')">
+          <button class="govuk-button govuk-button--warning" data-module="govuk-button" type="submit">
+            Delete Task
+          </button>
+        </form>
+        <a class="govuk-link" href="/tasks">Back to Tasks</a>
+      </div>
+    </main>
+  </div>
+{% endblock %}
