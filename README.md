@@ -288,4 +288,4 @@ yarn start
 
 ## License
 
-This project is developed for HMCTS technical assessment purposes.
+Copyright (c) 2025 Daniel Patynski
